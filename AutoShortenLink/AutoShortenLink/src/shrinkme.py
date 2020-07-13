@@ -1,74 +1,85 @@
 import time
 
-import pyautogui
-
-from constants import SHRINKME_IMAGE_PATH, MAX_COUNTDOWN_TIMER
+from constants import IMAGE_PATH, SHRINKME_IMAGE_PATH, MAX_COUNTDOWN_TIMER
 from browser_driver import BrowserDriver
+from element_locator import ElementLocator
+from logger import Logger
 
 class ShrinkMe:
     def __init__(self, browser_driver):
         self.browser_driver = browser_driver
+        self.logger = Logger.get_instance()
+        self.element_locator = ElementLocator(self.browser_driver)
 
     def shorten_link(self):
         self.browser_driver.open_url()
         self.browser_driver.set_main_tab_handle()
 
-        self.__solve_captcha_imnotarobot()
-        self.__solve_captcha_choosingimages_using_bustercaptchasolver()
-        self.__clickheretocontinue()
-        self.__getlink()
+        # if self.__solve_captcha_imnotarobot():
+        #     time.sleep(5)
+        # else:
+        #     return
 
-    def __solve_captcha(self, retry_no, image):
-        is_image_loaded = False
-        retry = 0
-        while retry < retry_no:
-            retry += 1
+        # if self.__solve_captcha_choosingimages():
+        #     time.sleep(5)
+        # else:
+        #     return
 
-            # In rare cases, still want to make sure we're on the right tab
-            if not self.browser_driver.is_on_main_tab():
-                self.browser_driver.close_other_tabs()
-                continue
+        # if self.__click_clickheretocontinue():
+        #     time.sleep(5)
+        #     time.sleep(MAX_COUNTDOWN_TIMER)       # Wait for count-down timer
+        # else:
+        #     return
 
-            # Note: Can use pyautogui.locateCenterOnScreen(), but it throws exception if image is not found.
-            # By contrast, pyautogui.locateAllOnScreen() does not. So we can easily check whether image is loaded or not, and loaded how many times.1
-            pos_list = list(pyautogui.locateAllOnScreen(image, confidence=0.8))
-            # print(len(pos_list))
-            # No captcha found
-            if len(pos_list) == 0:
-                # Image have not loaded and displayed --> will wait for it
-                if not is_image_loaded:
-                    print('Catcha have not loaded yet')
-                    time.sleep(2)
-                    continue
-                # Already clicked on the image (making it disappeared) --> succeeded to solve the captcha
-                if is_image_loaded and self.browser_driver.is_on_main_tab():
-                    print('Passed captcha')
-                    break
-            # Captcha found --> will solve it
-            else:
-                is_image_loaded = True
-                print('Position is ' + str(pos_list[0]))
-                x, y = pyautogui.center(pos_list[0])
-                pyautogui.click(x, y)
-                self.browser_driver.close_other_tabs()
+        # if self.__getlink():
+        #     time.sleep(5)
+        # else:
+        #     return
 
     def __solve_captcha_imnotarobot(self):
-        print("Solving I'm not a robot")
-        self.__solve_captcha(15, SHRINKME_IMAGE_PATH + 'ImNotARobot2.png')
-        time.sleep(5)
+        print("Solving captcha_imnotarobot.")
+        result = self.element_locator.locate_and_click_on_element(15, SHRINKME_IMAGE_PATH + 'ImNotARobot2.png', 2)
 
-    def __solve_captcha_choosingimages_using_bustercaptchasolver(self):
-        print("Solving choosing images using Buster")
-        self.__solve_captcha(5, SHRINKME_IMAGE_PATH + 'Buster_CaptchaSolver.png')
-        time.sleep(10)
+        if result:
+            print('Passed captcha_imnotarobot.')
+            self.logger.info('Succeeded to solve captcha IM NOT A ROBOT.')
+        else:
+            self.logger.error('Failed to solve captcha IM NOT A ROBOT.')
+            self.logger.screenshot()
+        return result
 
-    def __clickheretocontinue(self):
-        print("Solving ClickHereToContinue")
-        self.__solve_captcha(15, SHRINKME_IMAGE_PATH + 'ClickHereToContinue.png')
-        time.sleep(5)
+    def __solve_captcha_choosingimages(self):
+        print("Solving captcha_choosingimages.")
+        result = self.element_locator.locate_and_click_on_element(10, IMAGE_PATH + 'Buster_CaptchaSolver.png', 4)
+
+        if result:
+            print('Passed captcha_choosingimages.')
+            self.logger.info('Succeeded to solve captcha CHOOSING IMAGES.')
+        else:
+            self.logger.error('Failed to solve captcha CHOOSING IMAGES.')
+            self.logger.screenshot()
+        return result
+
+    def __click_clickheretocontinue(self):
+        print("Solving ClickHereToContinue.")
+        result = self.element_locator.locate_and_click_on_element(15, SHRINKME_IMAGE_PATH + 'ClickHereToContinue.png', 2)
+
+        if result:
+            print('Passed ClickHereToContinue.')
+            self.logger.info('Succeeded to click on CLICK HERE TO CONTINUE.')
+        else:
+            self.logger.error('Failed to click on CLICK HERE TO CONTINUE.')
+            self.logger.screenshot()
+        return result
 
     def __getlink(self):
-        print("Solving GetLink")
-        time.sleep(MAX_COUNTDOWN_TIMER)       # Wait for count-down timer
-        self.__solve_captcha(10, SHRINKME_IMAGE_PATH + 'GetLink.png')
-        time.sleep(5)
+        print("Solving GetLink.")
+        result = self.element_locator.locate_and_click_on_element(10, SHRINKME_IMAGE_PATH + 'GetLink.png', 2)
+
+        if result:
+            print('Passed GetLink.')
+            self.logger.info('Succeeded to click on GET LINK.')
+        else:
+            self.logger.error('Failed to click on GET LINK.')
+            self.logger.screenshot()
+        return result

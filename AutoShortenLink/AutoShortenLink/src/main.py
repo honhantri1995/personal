@@ -8,6 +8,5 @@ def main():
     shrinkme = ShrinkMe(driver)
     shrinkme.shorten_link()
 
-
 if __name__ == "__main__":
     main()
