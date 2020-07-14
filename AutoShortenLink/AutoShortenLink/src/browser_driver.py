@@ -2,9 +2,11 @@ import os
 import time
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions
+from proxy_checker import ProxyChecker
+
 # import pyautogui
 
 
@@ -13,12 +15,14 @@ from selenium.webdriver.support import expected_conditions
 from conf import Conf
 from logger import Logger
 from user_agent_reader import UserAgentReader
+from proxy_reader import ProxyReader
 
 class BrowserDriver:
     def __init__(self):
         self.driver = None
         self.conf = Conf()
         self.main_tab_handle = None
+        self.logger = Logger.get_instance()
 
     def __set_browser_settings(self):
         options = webdriver.chrome.options.Options()
@@ -41,6 +45,17 @@ class BrowserDriver:
         options.add_argument("--disable-blink-features")
         options.add_argument("--disable-blink-features=AutomationControlled")
 
+        # Set proxy
+        proxy_reader = ProxyReader()
+        proxy = proxy_reader.get_random()
+        proxy_info = self.__validate_proxy(proxy)
+        if proxy_info is False:
+            self.logger.error('Invalid proxy: ' + proxy)
+        else:
+            options.add_argument('--proxy-server={}'.format(proxy))
+            # Output to log
+            self.logger.info(proxy_info)
+
         return options
 
     def start_browser(self):
@@ -52,6 +67,10 @@ class BrowserDriver:
     def get_webdriver(self):
         return self.driver
 
+    def __validate_proxy(self, proxy):
+        checker = ProxyChecker()
+        return checker.check_proxy(proxy)
+
     ''' Use a different user agent each time the Chrome driver is started --> Prevent Selenium detection
     '''
     def __set_random_useragent(self):
@@ -61,8 +80,7 @@ class BrowserDriver:
         self.driver.execute_cdp_cmd('Network.setUserAgentOverride', user_agent_dic)
 
         # Output to log
-        logger = Logger.get_instance()
-        logger.info(user_agent_dic)
+        self.logger.info(user_agent_dic)
 
     ''' Delete coockies
     '''

@@ -15,26 +15,26 @@ class ShrinkMe:
         self.browser_driver.open_url()
         self.browser_driver.set_main_tab_handle()
 
-        # if self.__solve_captcha_imnotarobot():
-        #     time.sleep(5)
-        # else:
-        #     return
+        if self.__solve_captcha_imnotarobot():
+            time.sleep(5)
+        else:
+            return
 
-        # if self.__solve_captcha_choosingimages():
-        #     time.sleep(5)
-        # else:
-        #     return
+        if self.__solve_captcha_choosingimages():
+            time.sleep(5)
+        else:
+            return
 
-        # if self.__click_clickheretocontinue():
-        #     time.sleep(5)
-        #     time.sleep(MAX_COUNTDOWN_TIMER)       # Wait for count-down timer
-        # else:
-        #     return
+        if self.__click_clickheretocontinue():
+            time.sleep(5)
+            time.sleep(MAX_COUNTDOWN_TIMER)       # Wait for count-down timer
+        else:
+            return
 
-        # if self.__getlink():
-        #     time.sleep(5)
-        # else:
-        #     return
+        if self.__getlink():
+            time.sleep(5)
+        else:
+            return
 
     def __solve_captcha_imnotarobot(self):
         print("Solving captcha_imnotarobot.")
