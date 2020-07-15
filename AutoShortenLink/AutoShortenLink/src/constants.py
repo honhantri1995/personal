@@ -9,8 +9,6 @@ PROXY_LIST_PATH = '..\\conf\\proxy_list.txt'
 IMAGE_PATH = '..\\img\\'
 SHRINKME_IMAGE_PATH = '..\\img\\shrinkme\\'
 
-
-
 MAX_COUNTDOWN_TIMER = 15
 
 class RESULT_ENUM:

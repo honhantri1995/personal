@@ -58,7 +58,8 @@ class ElementLocator:
         ]
 
         for web_msg in web_msg_list:
-            if str(web_msg) in self.browser_driver.get_webdriver().page_source.encode("utf-8"):
+            # if str(web_msg) in self.browser_driver.get_webdriver().page_source.encode("utf-8"):
+            if str(web_msg) in self.browser_driver.get_webdriver().page_source:
                 self.logger.error('Bot is DETECTED! ' + '({})'.format(web_msg))
                 self.logger.screenshot()
                 return True

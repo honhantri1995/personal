@@ -11,8 +11,8 @@ class ShrinkMe:
         self.logger = Logger.get_instance()
         self.element_locator = ElementLocator(self.browser_driver)
 
-    def shorten_link(self):
-        self.browser_driver.open_url()
+    def shorten_link(self, url):
+        self.browser_driver.open_url(url)
         self.browser_driver.set_main_tab_handle()
 
         if self.__solve_captcha_imnotarobot():

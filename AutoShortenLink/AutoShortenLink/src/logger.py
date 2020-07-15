@@ -60,18 +60,18 @@ class Logger():
         if not os.path.isdir(absolute_path):                        # If no dir is found, create it
             os.mkdir(absolute_path)
 
-    ''' Each time the script is started, a separator is added for easy notice
+    ''' Each time the script is started, a separator is added for higher readability
     '''
     def __create_separator(self):
         self.logger.info('\n')
         self.logger.info('=====================================================================================================================')
 
     def error(self, msg):
-        full_msg = "[{}] [{} at line {}]: {}".format(*self.__get_callstack_info(), msg)
+        full_msg = "[{}] [{}() - {}]: {}".format(*self.__get_callstack_info(), msg)
         return self.logger.error(full_msg)
 
     def info(self, msg):
-        full_msg = "[{}] [{} at line {}]: {}".format(*self.__get_callstack_info(), msg)
+        full_msg = "[{}] [{}() - {}]: {}".format(*self.__get_callstack_info(), msg)
         return self.logger.info(full_msg)
 
     def screenshot(self):

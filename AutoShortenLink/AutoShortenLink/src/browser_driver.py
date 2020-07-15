@@ -5,23 +5,18 @@ from selenium import webdriver
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions
-from proxy_checker import ProxyChecker
-
-# import pyautogui
-
-
-# from selenium.webdriver.common.keys import Keys
 
 from conf import Conf
 from logger import Logger
-from user_agent_reader import UserAgentReader
-from proxy_reader import ProxyReader
 
 class BrowserDriver:
-    def __init__(self):
+    def __init__(self, proxy=None, useragent=None):
         self.driver = None
-        self.conf = Conf()
         self.main_tab_handle = None
+        self.proxy = proxy
+        self.useragent = useragent
+
+        self.conf = Conf()
         self.logger = Logger.get_instance()
 
     def __set_browser_settings(self):
@@ -46,41 +41,40 @@ class BrowserDriver:
         options.add_argument("--disable-blink-features=AutomationControlled")
 
         # Set proxy
-        proxy_reader = ProxyReader()
-        proxy = proxy_reader.get_random()
-        proxy_info = self.__validate_proxy(proxy)
-        if proxy_info is False:
-            self.logger.error('Invalid proxy: ' + proxy)
-        else:
-            options.add_argument('--proxy-server={}'.format(proxy))
-            # Output to log
-            self.logger.info(proxy_info)
+        if self.proxy:
+            options.add_argument('--proxy-server={}'.format(self.proxy))
+            self.logger.info(self.proxy)    # Output to log
 
         return options
 
-    def start_browser(self):
+    def open_browser(self):
         options = self.__set_browser_settings()
         self.driver = webdriver.Chrome(executable_path=self.conf.get_browser_driver_path(), options=options)
-        self.__set_random_useragent()
+
         self.__delete_cookies()
+
+        if self.useragent:
+            self.__set_random_useragent()
+
+    def quit_browser(self):
+        self.driver.quit()
+
+    def open_url(self, url):
+        self.driver.get(url)
+        # FIXME If url cannot opened --> reload max 3 times. Else, exit browser, repoen
+        self.logger.info(url)   # Output to log
 
     def get_webdriver(self):
         return self.driver
 
-    def __validate_proxy(self, proxy):
-        checker = ProxyChecker()
-        return checker.check_proxy(proxy)
-
     ''' Use a different user agent each time the Chrome driver is started --> Prevent Selenium detection
     '''
     def __set_random_useragent(self):
-        user_agent_reader = UserAgentReader()
         user_agent_dic = {}
-        user_agent_dic["userAgent"] = user_agent_reader.get_random()
+        user_agent_dic["userAgent"] = self.useragent
         self.driver.execute_cdp_cmd('Network.setUserAgentOverride', user_agent_dic)
 
-        # Output to log
-        self.logger.info(user_agent_dic)
+        self.logger.info(user_agent_dic)    # Output to log
 
     ''' Delete coockies
     '''
@@ -107,16 +101,11 @@ class BrowserDriver:
 
         # confirm_btn = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, '//*[@id="confirmDeleteDialog"]/div[3]/cr-button[2]')))
         # confirm_btn.click()
-
         # time.sleep(2)
 
         self.driver.execute_cdp_cmd('Network.clearBrowserCookies', {})
-        self.driver.execute_cdp_cmd('Network.deleteCookies', {})
-
         self.driver.execute_cdp_cmd('Network.clearBrowserCache', {})
-
-        time.sleep(2)
-
+        time.sleep(0.5)
 
     def set_main_tab_handle(self):
         self.main_tab_handle = self.driver.current_window_handle
@@ -124,17 +113,8 @@ class BrowserDriver:
     def is_on_main_tab(self):
         return True if self.main_tab_handle == self.driver.current_window_handle else False
 
-    def open_url(self):
-        url = self.conf.get_url()
-        # self.driver.get(url)
-        # self.__delete_cookies('1rx.io')
-
-        # Output to log
-        logger = Logger.get_instance()
-        logger.info(url)
-
     def close_other_tabs(self):
-        # Note: The time to open a new time might be longer than the code execution, so the following checking can lead to wrong behavior.
+        # Note: The time to open a new time might be longer than the code execution, so the following check can lead to wrong behavior.
         # if self.is_on_main_tab():
         #     return
         count = 0
