@@ -1,10 +1,11 @@
 import os
 import time
+import urllib.request
 
 from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from conf import Conf
 from logger import Logger
@@ -61,7 +62,6 @@ class BrowserDriver:
 
     def open_url(self, url):
         self.driver.get(url)
-        # FIXME If url cannot opened --> reload max 3 times. Else, exit browser, repoen
         self.logger.info(url)   # Output to log
 
     def get_webdriver(self):
@@ -129,3 +129,47 @@ class BrowserDriver:
                         self.driver.switch_to_window(handle)
                         self.driver.close()
                 self.driver.switch_to_window(self.main_tab_handle)
+
+    def is_nointernet(self):
+        id_nointernet = 'main-message'
+        xpath_nointernet = '//*[@id="main-message"]/h1/span'
+        xpath = '//*[@id="mainNav"]/div/div[1]/a/img'
+        class_name = 'neterror'
+        retry_no = 0
+        no_internet = True
+
+        # element = WebDriverWait(self.driver, 3).until(EC.visibility_of_any_elements_located((By.CLASS_NAME, 'neterror'))).
+        # print(element)
+        text = self.driver.find_element_by_tag_name('body').text
+        print(text)
+        if 'NO INTERNET' in text:
+            print('found')
+        while retry_no <= 1:
+            if len( self.driver.find_elements_by_class_name(class_name) ) > 0:
+                self.driver.refresh()
+                if retry_no == 1 and len( self.driver.find_elements_by_class_name(class_name) ) == 0:
+                    no_internet = False
+            else:
+                no_internet = False
+                break
+
+        # Output to log
+        if no_internet:
+            self.logger.error('NO INTERNET!')
+        else:
+            self.logger.info('URL was loaded successfully.')
+
+        return no_internet
+
+        # This site canÂft be reached
+        # No internet
+
+
+    def connect(self, host='https://shrinkme.io/nvVU/'):
+        try:
+            urllib.request.urlopen(host) #Python 3.x
+            print("connect")
+            return True
+        except:
+            print("not connect")
+            return False

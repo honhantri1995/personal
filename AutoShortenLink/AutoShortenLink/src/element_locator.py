@@ -23,8 +23,8 @@ class ElementLocator:
                 self.browser_driver.close_other_tabs()
                 continue
 
-            if self.__is_bot_detected():
-                return False
+            # if self.__is_nointernet():
+            #     return False
 
             # Note: Can use pyautogui.locateCenterOnScreen(), but it throws exception if element is not found.
             # By contrast, pyautogui.locateAllOnScreen() does not. So we can easily check whether element is loaded or not, and loaded how many times.1
@@ -52,16 +52,21 @@ class ElementLocator:
 
         return False    # Fail
 
-    def __is_bot_detected(self):
-        web_msg_list = ['Please upgrade to a supported browser to get a reCAPTCHA challenge.',
-                        'Your computer or network may be sending automated queries.'
-        ]
+    # def __is_bot_detected(self):
+    #     # web_msg_list = ['Please upgrade to a supported browser to get a reCAPTCHA challenge.',
+    #     #                 'Your computer or network may be sending automated queries.'
+    #     # ]
 
-        for web_msg in web_msg_list:
-            # if str(web_msg) in self.browser_driver.get_webdriver().page_source.encode("utf-8"):
-            if str(web_msg) in self.browser_driver.get_webdriver().page_source:
-                self.logger.error('Bot is DETECTED! ' + '({})'.format(web_msg))
-                self.logger.screenshot()
-                return True
+    #     # for web_msg in web_msg_list:
+    #     #     # if str(web_msg) in self.browser_driver.get_webdriver().page_source.encode("utf-8"):
+    #     #     if str(web_msg) in self.browser_driver.get_webdriver().page_source:
+    #     #         self.logger.error('Bot is DETECTED! ' + '({})'.format(web_msg))
+    #     #         self.logger.screenshot()
+    #     #         return True
 
-        return False
+    #     # xpath_nointernet = '//*[@id="main-message"]/h1/span'
+    #     id_nointernet = 'main-message'
+    #     if len( self.browser_driver.get_webdriver().find_elements_by_id(id_nointernet) ) > 0:
+    #         self.logger.error('Bot is DETECTED! ' + '({})'.format(web_msg))
+    #         self.logger.screenshot()
+    #         return True

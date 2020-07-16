@@ -11,7 +11,7 @@ SHRINKME_IMAGE_PATH = '..\\img\\shrinkme\\'
 
 MAX_COUNTDOWN_TIMER = 15
 
-class RESULT_ENUM:
-    FAIL = 0
-    SUCCESS = 1
-    INPROCESS = 2
+# class RESULT_ENUM:
+#     FAIL = 0
+#     SUCCESS = 1
+#     INPROCESS = 2

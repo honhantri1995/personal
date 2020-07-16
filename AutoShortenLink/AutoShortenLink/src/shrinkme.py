@@ -13,6 +13,10 @@ class ShrinkMe:
 
     def shorten_link(self, url):
         self.browser_driver.open_url(url)
+        # if self.browser_driver.is_nointernet():
+        if self.browser_driver.connect():
+            return
+
         self.browser_driver.set_main_tab_handle()
 
         if self.__solve_captcha_imnotarobot():
