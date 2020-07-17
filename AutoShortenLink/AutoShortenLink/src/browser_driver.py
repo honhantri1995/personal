@@ -138,28 +138,33 @@ class BrowserDriver:
         retry_no = 0
         no_internet = True
 
-        # element = WebDriverWait(self.driver, 3).until(EC.visibility_of_any_elements_located((By.CLASS_NAME, 'neterror'))).
+        try:
+            element = WebDriverWait(self.driver, 3).until(EC.visibility_of_any_elements_located((By.CLASS_NAME, 'neterror')))
+        except:
+            return False
+
+        return True
         # print(element)
-        text = self.driver.find_element_by_tag_name('body').text
-        print(text)
-        if 'NO INTERNET' in text:
-            print('found')
-        while retry_no <= 1:
-            if len( self.driver.find_elements_by_class_name(class_name) ) > 0:
-                self.driver.refresh()
-                if retry_no == 1 and len( self.driver.find_elements_by_class_name(class_name) ) == 0:
-                    no_internet = False
-            else:
-                no_internet = False
-                break
+        # text = self.driver.find_element_by_tag_name('body').text
+        # print(text)
+        # if 'NO INTERNET' in text:
+        #     print('found')
+        # while retry_no <= 1:
+        #     if len( self.driver.find_elements_by_class_name(class_name) ) > 0:
+        #         self.driver.refresh()
+        #         if retry_no == 1 and len( self.driver.find_elements_by_class_name(class_name) ) == 0:
+        #             no_internet = False
+        #     else:
+        #         no_internet = False
+        #         break
 
-        # Output to log
-        if no_internet:
-            self.logger.error('NO INTERNET!')
-        else:
-            self.logger.info('URL was loaded successfully.')
+        # # Output to log
+        # if no_internet:
+        #     self.logger.error('NO INTERNET!')
+        # else:
+        #     self.logger.info('URL was loaded successfully.')
 
-        return no_internet
+        # return no_internet
 
         # This site canÂft be reached
         # No internet
