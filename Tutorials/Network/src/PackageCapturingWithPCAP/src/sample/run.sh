@@ -1,0 +1,3 @@
+EXE=sample
+
+./$EXE

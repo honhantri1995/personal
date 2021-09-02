@@ -1,0 +1,3 @@
+EXE=snipper
+
+./$EXE
